@@ -1,0 +1,20 @@
+name: playback_dl
+version: 0.1.0
+
+authors:
+  - DannyAAM <danny@saru.moe>
+
+targets:
+  playback_dl:
+    main: src/playback_dl.cr
+
+dependencies:
+  lexbor:
+    github: kostya/lexbor
+  shell-escape:
+    github: alexherbo2/shell-escape.cr
+
+
+crystal: 1.1.1
+
+license: MIT
