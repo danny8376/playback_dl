@@ -288,6 +288,7 @@ class YTDownloader < Downloader
   def dl
     if @no_resume
       parse_video_web
+      open_tmp
     elsif !File.exists?(tmp_name(:resume)) || load_resume_file.nil?
       parse_video_web
       open_tmp
