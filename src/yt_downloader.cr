@@ -123,7 +123,7 @@ class YTDownloader < Downloader
               sleep 1.second
               @fail += 1
               if @fail > 30
-                raise "failed"
+                raise "failed - maybe normal if last file downloaded"
               end
             end
           end
