@@ -4,7 +4,9 @@ require "json"
 require "uri"
 require "shell-escape"
 
-class YTDownloader
+require "./downloader"
+
+class YTDownloader < Downloader
   class NotSupportedError < ::Exception
     def self.new
       new(message: "Not supported video, maybe not stream, use youtube-dl to download instead.")
@@ -15,10 +17,9 @@ class YTDownloader
 
   @video_file : File?
   @audio_file : File?
-  @resume_file : File?
 
   def initialize(@id : String, @auto_merge : Bool? = nil, @merge = false, @no_resume = false)
-    @clients = Hash(Tuple(Symbol, String), HTTP::Client).new
+    super @auto_merge, @merge, @no_resume
     @title = ""
     @date = ""
     @video_url = ""
@@ -34,32 +35,6 @@ class YTDownloader
     @type = :video
     @fail = 0
     @streaming = true
-    @resuming = false
-  end
-
-  def client(uri : URI, type = :main)
-    host = uri.host.not_nil!
-    key = {type, host}
-    client = @clients[key]?
-    if client.nil?
-      client = HTTP::Client.new host, tls: true
-      @clients[key] = client
-    end
-    client.not_nil!
-  end
-
-  def get(uri : URI, type = :main, depth = 0, &block : HTTP::Client::Response -> )
-    depth += 1
-    raise "too many redirection" if depth > 15
-    client(uri, type).get uri.request_target do |res|
-      case res.status_code
-      when 301, 302
-        puts "Redirection"
-        get URI.parse(res.headers["Location"]), type, depth, &block
-      else
-        yield res
-      end
-    end
   end
 
   macro gen_video_audio
@@ -299,12 +274,8 @@ class YTDownloader
     end
   end
 
-  def sanitize(s)
-    s.gsub(/(?:[\/<>:"\|\\?\*]|[\s.]$)/) { "#" }
-  end
-
   def filename
-    "#{sanitize @date}-#{sanitize @title}-#{@id}.mp4"
+    "#{sanitize_filename @date}-#{sanitize_filename @title}-#{@id}.mp4"
   end
 
   def merge
@@ -333,14 +304,6 @@ class YTDownloader
   ensure
     close_tmp
     merge if @auto_merge.nil? ? !@streaming : @auto_merge
-  end
-
-  def run
-    if @merge
-      merge if load_resume_file
-    else
-      dl
-    end
   end
 end
 
