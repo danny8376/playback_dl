@@ -1,4 +1,3 @@
-require "http/client"
 require "lexbor"
 require "json"
 require "uri"
@@ -59,12 +58,19 @@ class YTDownloader < Downloader
         {{type.id}}_size = -1_i64
       {% end %}
       html = Lexbor::Parser.new res.body
-      @date = html.css("meta[itemprop=uploadDate]").first.attribute_by("content").try &.gsub("-") {} || Time.local.to_s("%Y%m%d")
+      @date = Time.local.to_s("%Y%m%d") # fallback
       html.css("script:not([src])").each do |node|
         case node.inner_text
         when /var ytInitialPlayerResponse\s*=\s*({.*?});/
           json = JSON.parse $~[1]
-          @title = json["videoDetails"]["title"].as_s
+          video_details = json["videoDetails"]
+          @title = video_details["title"].as_s
+          microformat = json["microformat"]["playerMicroformatRenderer"]
+          if video_details["isLive"].as_bool
+            @date = Time.parse_rfc3339(microformat["liveBroadcastDetails"]["startTimestamp"].as_s).to_s("%Y%m%d")
+          else
+            @date = microformat["uploadDate"].as_s.gsub("-") {}
+          end
           formats = json["streamingData"]["adaptiveFormats"].as_a
           formats.each do |format|
             case format["mimeType"].as_s
