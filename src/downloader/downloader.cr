@@ -34,7 +34,17 @@ class Downloader
     end
   end
 
+  DUMMY_RES = HTTP::Client::Response.new 404
   {% for method in %w(get post) %}
+    def {{method.id}}(uri : URI, type = :main, headers : HTTP::Headers? = nil, body : HTTP::Client::BodyType = nil)
+      ret_res = DUMMY_RES
+      exec {{method.upcase}}, uri, type, headers, body do |res|
+        res.consume_body_io
+        ret_res = res
+      end
+      ret_res
+    end
+
     def {{method.id}}(uri : URI, type = :main, headers : HTTP::Headers? = nil, body : HTTP::Client::BodyType = nil, &block : HTTP::Client::Response -> )
       exec {{method.upcase}}, uri, type, headers, body, &block
     end

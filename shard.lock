@@ -4,6 +4,10 @@ shards:
     git: https://github.com/kostya/lexbor.git
     version: 3.0.1
 
+  m3u8:
+    git: https://github.com/akiicat/m3u8.git
+    version: 1.0.1
+
   shell-escape:
     git: https://github.com/alexherbo2/shell-escape.cr.git
     version: 0.1.0+git.commit.35173a2be0edc8230551f10f9607d0bb68c5d21b

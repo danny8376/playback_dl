@@ -1,6 +1,6 @@
 require "option_parser"
 
-require "./yt_downloader"
+require "./downloader/*"
 
 target = ""
 auto_merge : Bool? = nil
@@ -29,6 +29,13 @@ when "www.youtube.com"
 when "youtu.be"
   _, id = uri.path.split "/"
   dl = YTDownloader.new id, auto_merge: auto_merge, merge: merge, no_resume: no_resume
+when "www.twitch.tv", "twitch.tv"
+  path = uri.path.split "/"
+  _, ch, id = path
+  if path.size == 2 # channel
+  elsif ch == "videos"
+    dl = TwitchVodDownloader.new id, auto_merge: auto_merge, merge: merge, no_resume: no_resume
+  end
 end
 
 dl.try &.run
