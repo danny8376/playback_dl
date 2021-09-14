@@ -17,8 +17,8 @@ class YTDownloader < Downloader
   @video_file : File?
   @audio_file : File?
 
-  def initialize(@id : String, @auto_merge : Bool? = nil, @merge = false, @no_resume = false)
-    super @auto_merge, @merge, @no_resume
+  def initialize(@id : String, @auto_merge : Bool? = nil, @merge = false, @no_resume = false, @auth_token = "", @cookies = "")
+    super @auto_merge, @merge, @no_resume, @auth_token, @cookies
     @title = ""
     @date = ""
     @video_url = ""

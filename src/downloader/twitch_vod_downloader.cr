@@ -31,8 +31,8 @@ class TwitchVodDownloader < Downloader
   @video_file : File?
   @audio_file : File?
 
-  def initialize(@id : String, @auto_merge : Bool? = nil, @merge = false, @no_resume = false)
-    super @auto_merge, @merge, @no_resume
+  def initialize(@id : String, @auto_merge : Bool? = nil, @merge = false, @no_resume = false, @auth_token = "", @cookies = "")
+    super @auto_merge, @merge, @no_resume, @auth_token, @cookies
     @title = ""
     @date = ""
     @created_at = Time.local
@@ -47,6 +47,9 @@ class TwitchVodDownloader < Downloader
     @streaming = false
     @stream_id = ""
     @chasing = false
+    unless @auth_token.empty?
+      GQL_HEADERS["Authorization"] = @auth_token
+    end
   end
 
   def gql(body)
@@ -151,6 +154,7 @@ class TwitchVodDownloader < Downloader
       "sig" => [token["signature"]]
     })
     res = get @uri
+    puts "access denied, maybe it's required to login, pass oauth token" if res.status_code == 403
     raise "unable to get data from usher" if res.status_code != 200
     res.body
   end

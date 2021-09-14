@@ -4,7 +4,7 @@ require "uri"
 class Downloader
   @resume_file : File?
 
-  def initialize(@auto_merge : Bool? = nil, @merge = false, @no_resume = false)
+  def initialize(@auto_merge : Bool? = nil, @merge = false, @no_resume = false, @auth_token = "", @cookies = "")
     @clients = Hash(Tuple(Symbol, String), HTTP::Client).new
     @resuming = false
   end
