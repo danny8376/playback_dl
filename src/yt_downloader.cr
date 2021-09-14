@@ -122,6 +122,8 @@ class YTDownloader < Downloader
               rescue ex : IO::Error
                 file.pos = prev_pos
               end
+            else
+              res.body_io.gets_to_end # consume remaining body
             end
 
             if fail
@@ -200,6 +202,7 @@ class YTDownloader < Downloader
 
   def save_resume_file
     @resume_file.try do |f|
+      f.pos = 0
       f.puts @streaming ? "stream" : "video"
       f.puts @title
       f.puts @date
@@ -242,7 +245,7 @@ class YTDownloader < Downloader
   def tmp_name(type : Symbol)
     case type
     when :video, :audio
-      "dltmp-yt-#{@id}-#{type}.ts"
+      "dltmp-yt-#{type}-#{@id}.ts"
     when :resume
       "dltmp-yt-resume-#{@id}.dat"
     else
