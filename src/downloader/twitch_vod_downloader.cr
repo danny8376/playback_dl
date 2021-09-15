@@ -311,9 +311,9 @@ class TwitchVodDownloader < Downloader
           sleep @seg_duration.seconds
         end
 
-        res.body_io.gets_to_end # consume remaining body
+        res.body_io?.try &.gets_to_end # consume remaining body
       else
-        res.body_io.gets_to_end # consume remaining body
+        res.body_io?.try &.gets_to_end # consume remaining body
       end
 
       if fail

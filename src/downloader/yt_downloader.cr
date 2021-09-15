@@ -123,7 +123,7 @@ class YTDownloader < Downloader
                 file.pos = prev_pos
               end
             else
-              res.body_io.gets_to_end # consume remaining body
+              res.body_io?.try &.gets_to_end # consume remaining body
             end
 
             if fail
