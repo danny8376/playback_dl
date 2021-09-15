@@ -66,7 +66,7 @@ class YTDownloader < Downloader
           video_details = json["videoDetails"]
           @title = video_details["title"].as_s
           microformat = json["microformat"]["playerMicroformatRenderer"]
-          if video_details["isLive"].as_bool
+          if video_details["isLive"]?.try &.as_bool
             @date = Time.parse_rfc3339(microformat["liveBroadcastDetails"]["startTimestamp"].as_s).to_s("%Y%m%d")
           else
             @date = microformat["uploadDate"].as_s.gsub("-") {}
