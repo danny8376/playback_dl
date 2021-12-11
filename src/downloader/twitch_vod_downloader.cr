@@ -1,7 +1,6 @@
 require "json"
 require "uri"
 require "m3u8"
-require "shell-escape"
 
 require "./downloader"
 
@@ -332,7 +331,7 @@ class TwitchVodDownloader < Downloader
   end
 
   def merge
-    `ffmpeg -i #{tmp_name(:video)} -c copy #{ShellEscape.quote filename}`
+    `ffmpeg -i #{tmp_name(:video)} -c copy #{Process.quote filename}`
     if $?.success?
       clean_tmp
     end

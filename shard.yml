@@ -11,8 +11,6 @@ targets:
 dependencies:
   lexbor:
     github: kostya/lexbor
-  shell-escape:
-    github: alexherbo2/shell-escape.cr
   m3u8:
     github: akiicat/m3u8
 

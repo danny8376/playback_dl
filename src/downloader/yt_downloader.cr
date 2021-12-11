@@ -289,7 +289,7 @@ class YTDownloader < Downloader
   end
 
   def merge
-    `ffmpeg -i #{tmp_name(:video)} -i #{tmp_name(:audio)} -c copy #{ShellEscape.quote filename}`
+    `ffmpeg -i #{tmp_name(:video)} -i #{tmp_name(:audio)} -c copy #{Process.quote filename}`
     if $?.success?
       clean_tmp
     end
